@@ -5,6 +5,7 @@ import { X, Upload, BookOpen, Image, Trash2 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useSupabase } from '@/components/providers/SupabaseProvider'
 import toast from 'react-hot-toast'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface Template {
   id: string
@@ -159,31 +160,65 @@ export function CreateJournalModal({ onClose, onJournalCreated }: CreateJournalM
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <motion.div 
+        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+        transition={{ duration: 0.3, type: "spring", damping: 25, stiffness: 300 }}
+        className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto"
+      >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+          className="flex items-center justify-between p-6 border-b border-gray-200"
+        >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center">
+            <motion.div 
+              whileHover={{ rotate: 5 }}
+              transition={{ duration: 0.2 }}
+              className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg"
+            >
               <BookOpen className="w-6 h-6 text-white" />
-            </div>
+            </motion.div>
             <div>
               <h2 className="text-xl font-semibold text-gray-900">Создать журнал</h2>
               <p className="text-sm text-gray-500">Новый личный дневник</p>
             </div>
           </div>
-          <button
+          <motion.button
+            whileHover={{ scale: 1.1, rotate: 90 }}
+            whileTap={{ scale: 0.9 }}
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200"
           >
             <X className="w-5 h-5" />
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <motion.form 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+          onSubmit={handleSubmit} 
+          className="p-6 space-y-6"
+        >
           {/* Title */}
-          <div>
+          <motion.div
+            initial={{ x: -20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.3 }}
+          >
             <label className="form-label required">
               Название журнала
             </label>
@@ -191,7 +226,7 @@ export function CreateJournalModal({ onClose, onJournalCreated }: CreateJournalM
               type="text"
               value={formData.title}
               onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              className="input-field"
+              className="input-field transition-all duration-200 focus:scale-[1.02]"
               placeholder="Мой дневник благодарности"
               required
               maxLength={100}
@@ -199,17 +234,21 @@ export function CreateJournalModal({ onClose, onJournalCreated }: CreateJournalM
             <p className="text-xs text-gray-500 mt-1">
               {formData.title.length}/100 символов
             </p>
-          </div>
+          </motion.div>
 
           {/* Description */}
-          <div>
+          <motion.div
+            initial={{ x: -20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.4 }}
+          >
             <label className="form-label">
               Описание
             </label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              className="input-field"
+              className="input-field transition-all duration-200 focus:scale-[1.02]"
               rows={3}
               placeholder="Краткое описание вашего журнала (необязательно)"
               maxLength={500}
@@ -217,7 +256,7 @@ export function CreateJournalModal({ onClose, onJournalCreated }: CreateJournalM
             <p className="text-xs text-gray-500 mt-1">
               {formData.description.length}/500 символов
             </p>
-          </div>
+          </motion.div>
 
           {/* Template Selection */}
           <div>
@@ -242,19 +281,25 @@ export function CreateJournalModal({ onClose, onJournalCreated }: CreateJournalM
           </div>
 
           {/* Visibility */}
-          <div>
+          <motion.div
+            initial={{ x: -20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.6 }}
+          >
             <label className="form-label">
               Видимость
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {['private', 'friends', 'public'].map((visibility) => (
-                <label
+                <motion.label
                   key={visibility}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   className={`relative cursor-pointer border-2 rounded-xl p-3 transition-all ${
                     formData.visibility === visibility
-                      ? 'border-primary-500 bg-primary-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
+                      ? 'border-primary-500 bg-gradient-to-br from-primary-50 to-primary-100 shadow-md'
+                      : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
+                  } shadow-sm`}
                 >
                   <input
                     type="radio"
@@ -265,9 +310,13 @@ export function CreateJournalModal({ onClose, onJournalCreated }: CreateJournalM
                     className="sr-only"
                   />
                   <div className="text-center">
-                    <div className="text-2xl mb-2">
+                    <motion.div 
+                      animate={{ scale: formData.visibility === visibility ? 1.1 : 1 }}
+                      transition={{ duration: 0.2 }}
+                      className="text-2xl mb-2"
+                    >
                       {getVisibilityIcon(visibility)}
-                    </div>
+                    </motion.div>
                     <div className="text-sm font-medium text-gray-900 capitalize">
                       {visibility === 'public' ? 'Публичный' : visibility === 'friends' ? 'Для друзей' : 'Приватный'}
                     </div>
@@ -275,10 +324,10 @@ export function CreateJournalModal({ onClose, onJournalCreated }: CreateJournalM
                       {getVisibilityDescription(visibility)}
                     </div>
                   </div>
-                </label>
+                </motion.label>
               ))}
             </div>
-          </div>
+          </motion.div>
 
           {/* Cover Image */}
           <div>
@@ -330,23 +379,36 @@ export function CreateJournalModal({ onClose, onJournalCreated }: CreateJournalM
           </div>
 
           {/* Actions */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-gray-200">
-            <button
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.8 }}
+            className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-gray-200"
+          >
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               type="button"
               onClick={onClose}
-              className="flex-1 btn-secondary"
+              className="flex-1 btn-secondary shadow-sm hover:shadow-md transition-all duration-200"
               disabled={loading}
             >
               Отмена
-            </button>
-            <button
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={loading}
-              className="flex-1 btn-primary flex items-center justify-center gap-2"
+              className="flex-1 btn-primary flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all duration-200"
             >
               {loading ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  <motion.div 
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    className="rounded-full h-4 w-4 border-b-2 border-white"
+                  />
                   <span className="hidden sm:inline">Создание...</span>
                   <span className="sm:hidden">Создание</span>
                 </>
@@ -357,10 +419,10 @@ export function CreateJournalModal({ onClose, onJournalCreated }: CreateJournalM
                   <span className="sm:hidden">Создать</span>
                 </>
               )}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+            </motion.button>
+          </motion.div>
+        </motion.form>
+      </motion.div>
+    </motion.div>
   )
 }

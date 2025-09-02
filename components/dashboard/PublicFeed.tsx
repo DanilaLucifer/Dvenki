@@ -4,15 +4,16 @@ import { useState, useEffect } from 'react'
 import { Heart, MessageCircle, Share2, BookOpen, User, Calendar, ThumbsUp, ThumbsDown, Send } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useSupabase } from '@/components/providers/SupabaseProvider'
-import { PublicFeedItem, Comment } from '@/types'
+import { PublicFeedItem, Comment, CommentWithProfile } from '@/types'
 import toast from 'react-hot-toast'
+import { motion, AnimatePresence } from 'framer-motion'
 
 export function PublicFeed() {
   const { user } = useSupabase()
   const [feedItems, setFeedItems] = useState<PublicFeedItem[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedEntry, setSelectedEntry] = useState<string | null>(null)
-  const [comments, setComments] = useState<Comment[]>([])
+  const [comments, setComments] = useState<CommentWithProfile[]>([])
   const [newComment, setNewComment] = useState('')
   const [submittingComment, setSubmittingComment] = useState(false)
   const [filter, setFilter] = useState('all')
@@ -134,7 +135,7 @@ export function PublicFeed() {
         .from('comments')
         .select(`
           *,
-          profile:profiles(*)
+          profile:profiles!comments_user_id_fkey(*)
         `)
         .eq('entry_id', entryId)
         .order('created_at', { ascending: true })
@@ -206,16 +207,26 @@ export function PublicFeed() {
   }
 
   return (
-    <div className="space-y-6">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="space-y-6"
+    >
       {/* Header with Search and Filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
+      <motion.div 
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+        className="flex flex-col sm:flex-row gap-4"
+      >
         <div className="relative flex-1">
           <input
             type="text"
             placeholder="Поиск по записям..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="input-field pl-10 w-full"
+            className="input-field pl-10 w-full transition-all duration-200 focus:scale-[1.02]"
           />
           <BookOpen className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
         </div>
@@ -223,7 +234,7 @@ export function PublicFeed() {
         <select
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="input-field w-full sm:w-auto"
+          className="input-field w-full sm:w-auto transition-all duration-200 focus:scale-[1.02]"
         >
           <option value="all">Все типы</option>
           <option value="gratitude">Благодарность</option>
@@ -232,16 +243,26 @@ export function PublicFeed() {
           <option value="travel">Путешествия</option>
           <option value="photo">Фото</option>
         </select>
-      </div>
+      </motion.div>
 
       {/* Results count */}
-      <div className="text-sm text-gray-600">
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3, delay: 0.2 }}
+        className="text-sm text-gray-600"
+      >
         Найдено {filteredItems.length} записей
-      </div>
+      </motion.div>
 
       {/* Feed Items */}
       {filteredItems.length === 0 ? (
-        <div className="text-center py-16">
+        <motion.div 
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="text-center py-16"
+        >
           <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">
             Публичные записи не найдены
@@ -249,26 +270,43 @@ export function PublicFeed() {
           <p className="text-gray-600 text-sm lg:text-base">
             Попробуйте изменить параметры поиска или фильтры
           </p>
-        </div>
+        </motion.div>
       ) : (
-        <div className="space-y-6">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4, delay: 0.3 }}
+          className="space-y-6"
+        >
           {filteredItems.map((item) => (
-            <div key={item.entry.id} className="card-hover">
+            <motion.div 
+              key={item.entry.id} 
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.4 }}
+              whileHover={{ y: -2, transition: { duration: 0.2 } }}
+              className="card-hover overflow-hidden"
+            >
               {/* Entry Header */}
               <div className="flex items-start gap-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex items-center justify-center flex-shrink-0">
+                <motion.div 
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ duration: 0.2 }}
+                  className="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg"
+                >
                   <User className="w-5 h-5 text-white" />
-                </div>
+                </motion.div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <h3 className="font-semibold text-gray-900">
                       {item.profile.display_name || 'Пользователь'}
                     </h3>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
                       {new Date(item.entry.created_at).toLocaleDateString('ru-RU')}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 flex items-center gap-1">
+                    <BookOpen className="w-3 h-3" />
                     Журнал: {item.journal.title}
                   </p>
                 </div>
@@ -289,140 +327,211 @@ export function PublicFeed() {
 
               {/* Entry Images */}
               {item.entry.images && item.entry.images.length > 0 && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-4">
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3 }}
+                  className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-4"
+                >
                   {item.entry.images.slice(0, 6).map((image, index) => (
-                    <div key={index} className="aspect-square bg-gray-200 rounded-lg overflow-hidden">
+                    <motion.div 
+                      key={index} 
+                      whileHover={{ scale: 1.05 }}
+                      transition={{ duration: 0.2 }}
+                      className="aspect-square bg-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md"
+                    >
                       <img
                         src={image}
                         alt={`Изображение ${index + 1}`}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
                       />
-                    </div>
+                    </motion.div>
                   ))}
-                </div>
+                </motion.div>
               )}
 
               {/* Entry Mood */}
               {item.entry.mood && (
-                <div className="flex items-center gap-2 mb-4">
+                <motion.div 
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center gap-2 mb-4 bg-gradient-to-r from-yellow-50 to-orange-50 p-3 rounded-lg border border-yellow-200"
+                >
                   <span className="text-sm text-gray-600">Настроение:</span>
                   <div className="flex gap-1">
                     {[1, 2, 3, 4, 5].map((star) => (
-                      <span
+                      <motion.span
                         key={star}
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ duration: 0.2, delay: star * 0.1 }}
+                        whileHover={{ scale: 1.2 }}
                         className={`text-lg ${
                           star <= item.entry.mood! ? 'text-yellow-400' : 'text-gray-300'
                         }`}
                       >
                         ★
-                      </span>
+                      </motion.span>
                     ))}
                   </div>
-                </div>
+                </motion.div>
               )}
 
               {/* Actions Bar */}
-              <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.2 }}
+                className="flex items-center justify-between pt-4 border-t border-gray-200"
+              >
                 <div className="flex items-center gap-4">
                   {/* Like/Dislike */}
                   <div className="flex items-center gap-2">
-                    <button
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       onClick={() => handleLike(item.entry.id, true)}
-                      className={`flex items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
+                      className={`flex items-center gap-1 px-3 py-2 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md ${
                         item.user_like === true
-                          ? 'bg-green-100 text-green-700'
-                          : 'text-gray-600 hover:bg-gray-100'
+                          ? 'bg-gradient-to-r from-green-100 to-green-200 text-green-700 border border-green-300'
+                          : 'text-gray-600 hover:bg-gray-100 border border-gray-200'
                       }`}
                     >
                       <ThumbsUp className="w-4 h-4" />
                       <span className="text-sm font-medium">{item.likes_count}</span>
-                    </button>
+                    </motion.button>
                     
-                    <button
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       onClick={() => handleLike(item.entry.id, false)}
-                      className={`flex items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
+                      className={`flex items-center gap-1 px-3 py-2 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md ${
                         item.user_like === false
-                          ? 'bg-red-100 text-red-700'
-                          : 'text-gray-600 hover:bg-gray-100'
+                          ? 'bg-gradient-to-r from-red-100 to-red-200 text-red-700 border border-red-300'
+                          : 'text-gray-600 hover:bg-gray-100 border border-gray-200'
                       }`}
                     >
                       <ThumbsDown className="w-4 h-4" />
                       <span className="text-sm font-medium">{item.dislikes_count}</span>
-                    </button>
+                    </motion.button>
                   </div>
 
                   {/* Comments */}
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => toggleComments(item.entry.id)}
-                    className="flex items-center gap-1 px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                    className={`flex items-center gap-1 px-3 py-2 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md border ${
+                      selectedEntry === item.entry.id
+                        ? 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-700 border-blue-300'
+                        : 'text-gray-600 hover:bg-gray-100 border-gray-200'
+                    }`}
                   >
                     <MessageCircle className="w-4 h-4" />
                     <span className="text-sm font-medium">{item.comments_count}</span>
-                  </button>
+                  </motion.button>
                 </div>
 
                 {/* Share */}
-                <button className="flex items-center gap-1 px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                <motion.button 
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex items-center gap-1 px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md border border-gray-200"
+                >
                   <Share2 className="w-4 h-4" />
                   <span className="text-sm font-medium">Поделиться</span>
-                </button>
-              </div>
+                </motion.button>
+              </motion.div>
 
               {/* Comments Section */}
-              {selectedEntry === item.entry.id && (
-                <div className="mt-4 pt-4 border-t border-gray-200">
+              <AnimatePresence>
+                {selectedEntry === item.entry.id && (
+                  <motion.div 
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="mt-4 pt-4 border-t border-gray-200 overflow-hidden"
+                  >
                   <h5 className="font-medium text-gray-900 mb-3">Комментарии</h5>
                   
                   {/* Comments List */}
-                  <div className="space-y-3 mb-4">
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3, delay: 0.1 }}
+                    className="space-y-3 mb-4 max-h-64 overflow-y-auto"
+                  >
                     {comments.map((comment) => (
-                      <div key={comment.id} className="flex gap-3 p-3 bg-gray-50 rounded-lg">
-                        <div className="w-8 h-8 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex items-center justify-center flex-shrink-0">
+                      <motion.div 
+                        key={comment.id} 
+                        initial={{ x: -20, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        transition={{ duration: 0.3 }}
+                        className="flex gap-3 p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-200 hover:shadow-sm transition-all duration-200"
+                      >
+                        <motion.div 
+                          whileHover={{ scale: 1.1 }}
+                          className="w-8 h-8 bg-gradient-to-br from-secondary-400 to-secondary-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm"
+                        >
                           <User className="w-4 h-4 text-white" />
-                        </div>
+                        </motion.div>
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
                             <span className="text-sm font-medium text-gray-900">
-                              {comment.user_id === user?.id ? 'Вы' : 'Пользователь'}
+                              {comment.user_id === user?.id ? 'Вы' : comment.profile?.display_name || 'Пользователь'}
                             </span>
-                            <span className="text-xs text-gray-500">
+                            <span className="text-xs text-gray-500 bg-white px-2 py-0.5 rounded-full">
                               {new Date(comment.created_at).toLocaleDateString('ru-RU')}
                             </span>
                           </div>
-                          <p className="text-sm text-gray-700">{comment.content}</p>
+                          <p className="text-sm text-gray-700 leading-relaxed">{comment.content}</p>
                         </div>
-                      </div>
+                      </motion.div>
                     ))}
-                  </div>
+                  </motion.div>
 
                   {/* Add Comment */}
-                  <div className="flex gap-2">
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.2 }}
+                    className="flex gap-2"
+                  >
                     <input
                       type="text"
                       placeholder="Добавить комментарий..."
                       value={newComment}
                       onChange={(e) => setNewComment(e.target.value)}
-                      className="input-field flex-1"
+                      className="input-field flex-1 transition-all duration-200 focus:scale-[1.02]"
                       onKeyPress={(e) => e.key === 'Enter' && handleComment(item.entry.id)}
                     />
-                    <button
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       onClick={() => handleComment(item.entry.id)}
                       disabled={submittingComment || !newComment.trim()}
-                      className="btn-primary px-4 py-2 disabled:opacity-50"
+                      className="btn-primary px-4 py-2 disabled:opacity-50 shadow-lg hover:shadow-xl transition-all duration-200"
                     >
                       {submittingComment ? (
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        <motion.div 
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                          className="rounded-full h-4 w-4 border-b-2 border-white"
+                        />
                       ) : (
                         <Send className="w-4 h-4" />
                       )}
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
+                    </motion.button>
+                  </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   )
 }

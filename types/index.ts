@@ -127,6 +127,11 @@ export interface PublicFeedItem {
   is_bookmarked: boolean
 }
 
+// Расширенный тип комментария с профилем
+export interface CommentWithProfile extends Comment {
+  profile: Profile
+}
+
 // Типы для поиска и фильтрации
 export interface SearchFilters {
   query: string

@@ -19,9 +19,19 @@ export function Hero() {
         
         <h1 className="text-3xl sm:text-4xl lg:text-6xl xl:text-7xl font-bold text-gray-900 mb-4 lg:mb-6 leading-tight">
           Создавайте
-          <span className="text-primary-600 block sm:inline"> журналы</span>
+          <motion.span 
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="text-transparent bg-gradient-to-r from-primary-500 to-primary-700 bg-clip-text block sm:inline"
+          > журналы</motion.span>
           <br className="hidden sm:block" />
-          <span className="text-gray-700">по расписанию</span>
+          <motion.span 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="text-gray-700"
+          >по расписанию</motion.span>
         </h1>
         
         <p className="text-lg sm:text-xl lg:text-2xl text-gray-600 mb-8 lg:mb-12 max-w-3xl mx-auto leading-relaxed">
@@ -38,12 +48,16 @@ export function Hero() {
       >
         <motion.div 
           className="text-center group"
-          whileHover={{ y: -5 }}
-          transition={{ duration: 0.2 }}
+          whileHover={{ y: -8, scale: 1.02 }}
+          transition={{ duration: 0.3, type: "spring", stiffness: 300 }}
         >
-          <div className="bg-gradient-to-br from-primary-100 to-primary-200 w-20 h-20 lg:w-24 lg:h-24 rounded-2xl flex items-center justify-center mx-auto mb-4 lg:mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300">
+          <motion.div 
+            whileHover={{ rotate: 5 }}
+            transition={{ duration: 0.2 }}
+            className="bg-gradient-to-br from-primary-100 to-primary-200 w-20 h-20 lg:w-24 lg:h-24 rounded-2xl flex items-center justify-center mx-auto mb-4 lg:mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300 border border-primary-200"
+          >
             <BookOpen className="w-10 h-10 lg:w-12 lg:h-12 text-primary-600" />
-          </div>
+          </motion.div>
           <h3 className="text-lg lg:text-xl font-semibold text-gray-900 mb-2 lg:mb-3">Умные шаблоны</h3>
           <p className="text-gray-600 text-sm lg:text-base leading-relaxed px-2">
             Выбирайте из готовых шаблонов или создавайте свои уникальные
@@ -52,12 +66,16 @@ export function Hero() {
 
         <motion.div 
           className="text-center group"
-          whileHover={{ y: -5 }}
-          transition={{ duration: 0.2, delay: 0.1 }}
+          whileHover={{ y: -8, scale: 1.02 }}
+          transition={{ duration: 0.3, type: "spring", stiffness: 300, delay: 0.1 }}
         >
-          <div className="bg-gradient-to-br from-warm-100 to-warm-200 w-20 h-20 lg:w-24 lg:h-24 rounded-2xl flex items-center justify-center mx-auto mb-4 lg:mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300">
+          <motion.div 
+            whileHover={{ rotate: -5 }}
+            transition={{ duration: 0.2 }}
+            className="bg-gradient-to-br from-warm-100 to-warm-200 w-20 h-20 lg:w-24 lg:h-24 rounded-2xl flex items-center justify-center mx-auto mb-4 lg:mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300 border border-warm-200"
+          >
             <Clock className="w-10 h-10 lg:w-12 lg:h-12 text-warm-600" />
-          </div>
+          </motion.div>
           <h3 className="text-lg lg:text-xl font-semibold text-gray-900 mb-2 lg:mb-3">Планирование</h3>
           <p className="text-gray-600 text-sm lg:text-base leading-relaxed px-2">
             Устанавливайте расписание и получайте умные напоминания
@@ -66,12 +84,16 @@ export function Hero() {
 
         <motion.div 
           className="text-center group sm:col-span-2 lg:col-span-1"
-          whileHover={{ y: -5 }}
-          transition={{ duration: 0.2, delay: 0.2 }}
+          whileHover={{ y: -8, scale: 1.02 }}
+          transition={{ duration: 0.3, type: "spring", stiffness: 300, delay: 0.2 }}
         >
-          <div className="bg-gradient-to-br from-secondary-100 to-secondary-200 w-20 h-20 lg:w-24 lg:h-24 rounded-2xl flex items-center justify-center mx-auto mb-4 lg:mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300">
+          <motion.div 
+            whileHover={{ rotate: 5 }}
+            transition={{ duration: 0.2 }}
+            className="bg-gradient-to-br from-secondary-100 to-secondary-200 w-20 h-20 lg:w-24 lg:h-24 rounded-2xl flex items-center justify-center mx-auto mb-4 lg:mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300 border border-secondary-200"
+          >
             <Share2 className="w-10 h-10 lg:w-12 lg:h-12 text-secondary-600" />
-          </div>
+          </motion.div>
           <h3 className="text-lg lg:text-xl font-semibold text-gray-900 mb-2 lg:mb-3">Социальность</h3>
           <p className="text-gray-600 text-sm lg:text-base leading-relaxed px-2">
             Делитесь с друзьями и находите единомышленников

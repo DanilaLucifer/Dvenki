@@ -6,6 +6,7 @@ import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { supabase } from '@/lib/supabase'
 import { useSupabase } from '@/components/providers/SupabaseProvider'
 import { Dashboard } from '@/components/dashboard/Dashboard'
+import { motion } from 'framer-motion'
 
 export function Auth() {
   const { user } = useSupabase()
@@ -16,20 +17,46 @@ export function Auth() {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-6 lg:p-8">
+    <motion.div 
+      initial={{ scale: 0.9, opacity: 0, y: 20 }}
+      animate={{ scale: 1, opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, type: "spring", damping: 25, stiffness: 300 }}
+      className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200 p-6 lg:p-8"
+    >
       <div className="text-center mb-8">
-        <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+        <motion.div 
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ duration: 0.6, delay: 0.2, type: "spring", stiffness: 300 }}
+          whileHover={{ rotate: 5, scale: 1.05 }}
+          className="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl border-2 border-primary-300"
+        >
           <span className="text-white font-bold text-2xl">D</span>
-        </div>
-        <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-3">
+        </motion.div>
+        <motion.h2 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="text-2xl lg:text-3xl font-bold text-gray-900 mb-3"
+        >
           Добро пожаловать в Dvenki
-        </h2>
-        <p className="text-gray-600 text-sm lg:text-base leading-relaxed max-w-sm mx-auto">
+        </motion.h2>
+        <motion.p 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+          className="text-gray-600 text-sm lg:text-base leading-relaxed max-w-sm mx-auto"
+        >
           Войдите или зарегистрируйтесь, чтобы начать создавать свои личные журналы
-        </p>
+        </motion.p>
       </div>
 
-      <div className="space-y-4">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.6 }}
+        className="space-y-4"
+      >
         <SupabaseAuth
           supabaseClient={supabase}
           appearance={{
@@ -105,10 +132,15 @@ export function Auth() {
             },
           }}
         />
-      </div>
+      </motion.div>
 
       {/* Additional Info */}
-      <div className="mt-8 pt-6 border-t border-gray-200">
+      <motion.div 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.8 }}
+        className="mt-8 pt-6 border-t border-gray-200"
+      >
         <div className="text-center">
           <p className="text-xs text-gray-500 mb-3">
             Регистрируясь, вы соглашаетесь с нашими условиями использования
@@ -121,7 +153,7 @@ export function Auth() {
             <span>Поддержка</span>
           </div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }

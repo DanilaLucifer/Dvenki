@@ -5,6 +5,7 @@ import { Users, UserPlus, UserCheck, UserX, Search, Send } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useSupabase } from '@/components/providers/SupabaseProvider'
 import toast from 'react-hot-toast'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface Friendship {
   id: string
@@ -183,16 +184,30 @@ export function Friends() {
   }
 
   return (
-    <div>
-      <div className="mb-8">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.div 
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+        className="mb-8"
+      >
         <h1 className="text-3xl font-bold text-gray-900">Друзья</h1>
         <p className="text-gray-600 mt-2">
           Управляйте своими друзьями и находите новых
         </p>
-      </div>
+      </motion.div>
 
       {/* Search Section */}
-      <div className="card mb-8">
+      <motion.div 
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4, delay: 0.2 }}
+        className="card mb-8 shadow-lg border-2 border-gray-100"
+      >
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Найти друзей</h2>
         <div className="flex gap-3">
           <div className="flex-1">
@@ -201,32 +216,54 @@ export function Friends() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Поиск по имени..."
-              className="input-field"
+              className="input-field transition-all duration-200 focus:scale-[1.02]"
               onKeyPress={(e) => e.key === 'Enter' && searchUsers()}
             />
           </div>
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={searchUsers}
             disabled={searching || !searchQuery.trim()}
-            className="btn-primary flex items-center gap-2"
+            className="btn-primary flex items-center gap-2 shadow-lg hover:shadow-xl transition-all duration-200"
           >
             {searching ? (
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              <motion.div 
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                className="rounded-full h-4 w-4 border-b-2 border-white"
+              />
             ) : (
               <Search className="w-4 h-4" />
             )}
             Найти
-          </button>
+          </motion.button>
         </div>
 
         {/* Search Results */}
-        {searchResults.length > 0 && (
-          <div className="mt-4 space-y-3">
+        <AnimatePresence>
+          {searchResults.length > 0 && (
+            <motion.div 
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="mt-4 space-y-3 overflow-hidden"
+            >
             <h3 className="text-sm font-medium text-gray-700">Результаты поиска:</h3>
             {searchResults.map((profile) => (
-              <div key={profile.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <motion.div 
+                key={profile.id} 
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.3 }}
+                className="flex items-center justify-between p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-200 hover:shadow-sm transition-all duration-200"
+              >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
+                  <motion.div 
+                    whileHover={{ scale: 1.1 }}
+                    className="w-10 h-10 bg-gradient-to-br from-secondary-400 to-secondary-600 rounded-full flex items-center justify-center overflow-hidden shadow-sm"
+                  >
                     {profile.avatar_url ? (
                       <img
                         src={profile.avatar_url}
@@ -236,23 +273,26 @@ export function Friends() {
                     ) : (
                       <Users className="w-5 h-5 text-gray-400" />
                     )}
-                  </div>
+                  </motion.div>
                   <span className="font-medium text-gray-900">
                     {profile.display_name || 'Без имени'}
                   </span>
                 </div>
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => sendFriendRequest(profile.id)}
-                  className="btn-primary flex items-center gap-2 text-sm"
+                  className="btn-primary flex items-center gap-2 text-sm shadow-md hover:shadow-lg transition-all duration-200"
                 >
                   <UserPlus className="w-4 h-4" />
                   Добавить в друзья
-                </button>
-              </div>
+                </motion.button>
+              </motion.div>
             ))}
-          </div>
-        )}
-      </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
 
       {/* Pending Requests */}
       {getPendingRequests().length > 0 && (
